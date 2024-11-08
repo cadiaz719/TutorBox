@@ -1,34 +1,68 @@
-import * as React from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import SplashScreen from './screens/SplashScreen';
-import HomeScreen from './screens/HomeScreen';
-import TutorListScreen from './screens/TutorListScreen';  
+import HomeScreen from './screens/HomeScreen'; 
+import LoginScreen from './screens/LoginScreen';  
+import MessagesScreen from './screens/MessagesScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
+import CalendarScreen from './screens/CalendarScreen';
+import TeacherSearchScreen from './screens/TeacherSearchScreen';
+import ReservationScreen from './screens/ReservationScreen';
+import ConfirmationScreen from './screens/ConfirmationScreen';
+import CancellationScreen from './screens/CancellationScreen';
 
 const Stack = createStackNavigator();
 
-const App: React.FC = () => {
+export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Splash">
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
-          name="Splash"
-          component={SplashScreen}
+          name="Login"
+          component={LoginScreen}  
           options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Home"
-          component={HomeScreen}
-          options={{ title: 'Inicio' }}
+          component={HomeScreen}  
+          options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="TutorList"
-          component={TutorListScreen}
-          options={{ title: 'Lista de Tutores' }}
+          name="Messages"
+          component={MessagesScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Notifications"
+          component={NotificationsScreen}  
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Calendar"
+          component={CalendarScreen}  
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TeacherSearch"
+          component={TeacherSearchScreen}  
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Reservation"
+          component={ReservationScreen}  
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Confirmation"
+          component={ConfirmationScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Cancellation"
+          component={CancellationScreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
-
-export default App;
+}
