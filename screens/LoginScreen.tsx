@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';  
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import app from '../config/firebaseConfig'; // Importa tu configuración de Firebase
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -10,13 +12,20 @@ type Props = {
 };
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [id, setId] = useState('');
+  const [id, setId] = useState(''); // Esto será el email en Firebase
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    
+  const handleLogin = async () => {
+    const auth = getAuth(app); // Inicializa Firebase Auth
     if (id !== '' && password !== '') {
-      navigation.replace('Home');  
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, id, password);
+        console.log('Inicio de sesión exitoso:', userCredential.user);
+        navigation.replace('Home'); // Navega a Home si el inicio es exitoso
+      } catch (error: any) {
+        console.error('Error al iniciar sesión:', error.message);
+        alert('Error: ' + error.message); // Muestra el error al usuario
+      }
     } else {
       alert('Por favor ingresa tu ID y contraseña');
     }
@@ -29,10 +38,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
       <TextInput
         style={styles.input}
-        placeholder="Ingresa tu ID"
+        placeholder="Correo electrónico"
         placeholderTextColor="#B0B0B0"
         value={id}
         onChangeText={setId}
+        keyboardType="email-address" // Asegura que sea un correo
       />
       <TextInput
         style={styles.input}

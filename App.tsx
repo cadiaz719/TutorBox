@@ -10,6 +10,8 @@ import TeacherSearchScreen from './screens/TeacherSearchScreen';
 import ReservationScreen from './screens/ReservationScreen';
 import ConfirmationScreen from './screens/ConfirmationScreen';
 import CancellationScreen from './screens/CancellationScreen';
+import './config/firebaseConfig'; // Asegúrate de que tu archivo firebaseConfig.ts esté configurado
+
 
 const Stack = createStackNavigator();
 
