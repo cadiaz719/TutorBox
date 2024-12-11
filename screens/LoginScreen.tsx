@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../types';  
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import app from '../config/firebaseConfig'; // Importa tu configuración de Firebase
+import { RootStackParamList } from '../types'; // Archivo con las rutas de navegación
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; // Autenticación
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore'; // Base de datos Firestore
+import app from '../config/firebaseConfig'; // Configuración de Firebase
 
+// Define el tipo de navegación
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 type Props = {
@@ -12,22 +14,42 @@ type Props = {
 };
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [id, setId] = useState(''); // Esto será el email en Firebase
+  // Estados para el correo electrónico y contraseña
+  const [id, setId] = useState('');
   const [password, setPassword] = useState('');
 
+  // Maneja el inicio de sesión
   const handleLogin = async () => {
     const auth = getAuth(app); // Inicializa Firebase Auth
+    const db = getFirestore(app); // Inicializa Firestore
+
     if (id !== '' && password !== '') {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, id, password);
-        console.log('Inicio de sesión exitoso:', userCredential.user);
-        navigation.replace('Home'); // Navega a Home si el inicio es exitoso
+        const user = userCredential.user; // Usuario autenticado
+
+        // Verifica si el usuario ya existe en Firestore
+        const userDoc = doc(db, 'users', user.uid);
+        const docSnapshot = await getDoc(userDoc);
+
+        if (!docSnapshot.exists()) {
+          // Si no existe, guarda los datos básicos en Firestore
+          await setDoc(userDoc, {
+            email: user.email,
+            name: 'Nombre por defecto', // Cambia por un valor real si lo tienes
+            createdAt: new Date().toISOString(),
+          });
+          console.log('Usuario guardado en Firestore.');
+        }
+
+        // Navega al Home si todo es exitoso
+        navigation.replace('Home');
       } catch (error: any) {
         console.error('Error al iniciar sesión:', error.message);
-        alert('Error: ' + error.message); // Muestra el error al usuario
+        alert('Error al iniciar sesión: ' + error.message);
       }
     } else {
-      alert('Por favor ingresa tu ID y contraseña');
+      alert('Por favor, ingresa tu correo y contraseña.');
     }
   };
 
@@ -42,13 +64,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         placeholderTextColor="#B0B0B0"
         value={id}
         onChangeText={setId}
-        keyboardType="email-address" // Asegura que sea un correo
+        keyboardType="email-address" 
       />
       <TextInput
         style={styles.input}
         placeholder="Ingresa tu contraseña"
         placeholderTextColor="#B0B0B0"
-        secureTextEntry
+        secureTextEntry 
         value={password}
         onChangeText={setPassword}
       />
