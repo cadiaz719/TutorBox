@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../types'; // Archivo con las rutas de navegación
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; // Autenticación
-import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore'; // Base de datos Firestore
-import app from '../config/firebaseConfig'; // Configuración de Firebase
+import { RootStackParamList } from '../types'; 
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; 
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore'; 
+import app from '../config/firebaseConfig'; 
 
-// Define el tipo de navegación
+
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 type Props = {
@@ -14,35 +14,35 @@ type Props = {
 };
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  // Estados para el correo electrónico y contraseña
+  
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
 
   // Maneja el inicio de sesión
   const handleLogin = async () => {
-    const auth = getAuth(app); // Inicializa Firebase Auth
-    const db = getFirestore(app); // Inicializa Firestore
+    const auth = getAuth(app); 
+    const db = getFirestore(app); 
 
     if (id !== '' && password !== '') {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, id, password);
-        const user = userCredential.user; // Usuario autenticado
+        const user = userCredential.user; 
 
-        // Verifica si el usuario ya existe en Firestore
+        
         const userDoc = doc(db, 'users', user.uid);
         const docSnapshot = await getDoc(userDoc);
 
         if (!docSnapshot.exists()) {
-          // Si no existe, guarda los datos básicos en Firestore
+          
           await setDoc(userDoc, {
             email: user.email,
-            name: 'Nombre por defecto', // Cambia por un valor real si lo tienes
+            name: 'Nombre por defecto', 
             createdAt: new Date().toISOString(),
           });
           console.log('Usuario guardado en Firestore.');
         }
 
-        // Navega al Home si todo es exitoso
+        
         navigation.replace('Home');
       } catch (error: any) {
         console.error('Error al iniciar sesión:', error.message);
